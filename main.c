@@ -1,4 +1,9 @@
 #include "raylib.h"
+#include "shader.h"
+
+#define TILE_LENGTH 4.0f
+
+Vector3 PosFromTiles(float x, float y, float z);
 
 int main(void)
 {
@@ -32,4 +37,8 @@ int main(void)
 
     CloseWindow();
     return 0;
+}
+
+Vector3 PosFromTiles(float x, float y, float z) {
+    return (Vector3){x * TILE_LENGTH, y * TILE_LENGTH, z * TILE_LENGTH};
 }
