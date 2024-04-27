@@ -1,13 +1,15 @@
 #include "raylib.h"
 #include "rlgl.h"
-#include "shader.h"
 
 // #define SWITCH_LIGHTS       // uncomment to enable light switching 
+#include "shader.h"
+
 #define TILE_LENGTH 4.0f
 
 Vector3 PosFromTiles(float x, float y, float z);
 void UpdateLightEnabled(int *enabled);
 void UpdateLightPos(Vector3 *pos);
+void UpdateFogDensity(float *density);
 
 int main(void)
 {
@@ -23,6 +25,9 @@ int main(void)
         .fovy = 45.0f,
         .projection = CAMERA_PERSPECTIVE
     };
+
+    // fog
+    float fogDensity = 0.04f;
 
     // light
     MyLight light = {0};
@@ -44,7 +49,7 @@ int main(void)
     plane.materials[0].shader = planeShader;
 
     Model sphere = LoadModelFromMesh(GenMeshSphere(TILE_LENGTH / 4, 32, 32));
-    sphere.materials[0].shader = lightSourceShader;
+    // sphere.materials[0].shader = lightSourceShader;
 
     // materials
     MyMaterial bronze = CreateBronze();
@@ -57,13 +62,15 @@ int main(void)
     {
         UpdateCamera(&camera, CAMERA_ORBITAL);
 
+        UpdateFogDensity(&fogDensity);
+
         UpdateLightPos(&light.position);
         UpdateLightEnabled(&light.enabled);
         UpdateLightColor(&light);
 
-        UpdateMaterialShader(planeShader, greenRubber, light, camera.position);
-        UpdateMaterialShader(cube1Shader, bronze, light, camera.position);
-        UpdateMaterialShader(cube2Shader, pearl, light, camera.position);
+        UpdateMaterialShader(planeShader, greenRubber, light, camera.position, fogDensity);
+        UpdateMaterialShader(cube1Shader, bronze, light, camera.position, fogDensity);
+        UpdateMaterialShader(cube2Shader, pearl, light, camera.position, fogDensity);
 
         BeginDrawing();
             ClearBackground(RAYWHITE);
@@ -105,17 +112,37 @@ void UpdateLightEnabled(int* enabled) {
 void UpdateLightPos(Vector3 *pos) {
     float step = 0.1;
 
-    if (IsKeyDown(KEY_I)) {
+    if (IsKeyDown(KEY_W)) {
         (*pos).x += step;
-    } else if (IsKeyDown(KEY_J)) {
+    } else if (IsKeyDown(KEY_A)) {
         (*pos).z -= step;
-    } else if (IsKeyDown(KEY_K)) {
+    } else if (IsKeyDown(KEY_S)) {
         (*pos).x -= step;
-    } else if (IsKeyDown(KEY_L)) {
+    } else if (IsKeyDown(KEY_D)) {
         (*pos).z += step;
-    } else if (IsKeyDown(KEY_U)) {
+    } else if (IsKeyDown(KEY_E)) {
         (*pos).y += step;
-    } else if (IsKeyDown(KEY_O)) {
+    } else if (IsKeyDown(KEY_Q)) {
         (*pos).y -= step;
     }
+}
+
+void UpdateFogDensity(float* density) {
+    if (IsKeyDown(KEY_UP))
+        {
+            *density += 0.001f;
+            
+            if (*density > 1.0f) {
+                *density = 1.0f;
+            }
+        }
+
+        if (IsKeyDown(KEY_DOWN))
+        {
+            *density -= 0.001f;
+
+            if (*density < 0.0f) {
+                *density = 0.0f;
+            }
+        }
 }

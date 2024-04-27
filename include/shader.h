@@ -30,7 +30,7 @@ MyMaterial CreateBronze() {
         .ambient = (Vector3){0.2125, 0.1275, 0.054},
         .diffuse = (Vector3){0.714, 0.4284, 0.18144},
         .specular = (Vector3){0.393548, 0.271906, 0.166721},
-        .shininess = 72    // 0.2
+        .shininess = 72 
     };
 }
 
@@ -39,7 +39,7 @@ MyMaterial CreatePearl() {
         .ambient = (Vector3){0.25, 0.20725, 0.20725},
         .diffuse = (Vector3){1, 0.829, 0.829},
         .specular = (Vector3){0.296648, 0.296648, 0.296648},
-        .shininess = 0.088    // 0.088
+        .shininess = 0.088   
     };
 }
 
@@ -48,7 +48,7 @@ MyMaterial CreateGreenRubber() {
         .ambient = (Vector3){0.0, 0.05, 0.0},
         .diffuse = (Vector3){0.4, 0.5, 0.4},
         .specular = (Vector3){0.04,	0.7, 0.04},
-        .shininess = 0.5    // 0.078125
+        .shininess = 0.5
     };
 }
 
@@ -62,14 +62,14 @@ void UpdateLightColor(MyLight* li) {
     #endif
     
     Vector3 diffuseColor = Vector3Multiply(lightColor, (Vector3){.5, .5, .5});
-    Vector3 ambientColor = Vector3Multiply(diffuseColor, (Vector3){.2, .2, .2});
+    Vector3 ambientColor = Vector3Multiply(lightColor, (Vector3){.2, .2, .2});
 
     (*li).ambient = ambientColor;
     (*li).diffuse = diffuseColor;
     (*li).specular = (Vector3){1, 1, 1};
 }
 
-void UpdateMaterialShader(Shader sh, MyMaterial mat, MyLight li, Vector3 viewPos) {
+void UpdateMaterialShader(Shader sh, MyMaterial mat, MyLight li, Vector3 viewPos, float fogDensity) {
     int viewPosLoc = GetShaderLocation(sh, "viewPos");
     SetShaderValue(sh, viewPosLoc, (float[3]){viewPos.x, viewPos.y, viewPos.z}, SHADER_UNIFORM_VEC3);
 
@@ -101,6 +101,20 @@ void UpdateMaterialShader(Shader sh, MyMaterial mat, MyLight li, Vector3 viewPos
 
     int liSpecLoc = GetShaderLocation(sh, "light.specular");
     SetShaderValue(sh, liSpecLoc, (float[3]){li.specular.x, li.specular.y, li.specular.z}, SHADER_UNIFORM_VEC3);
+
+    // fog props
+    #ifdef SWITCH_LIGHTS
+    float tk = sinf((float)GetTime());
+    Vector4 fogColor = {tk * 2.0, tk * 0.7, tk * 1.3, 1};
+    #else
+    Vector4 fogColor = {0.5, 0.5, 0.5, 1};
+    #endif
+
+    int fogColorLoc = GetShaderLocation(sh, "fogColor");
+    SetShaderValue(sh, fogColorLoc, (float[4]){fogColor.x, fogColor.y, fogColor.z, fogColor.w}, SHADER_UNIFORM_VEC4);
+
+    int fogDensityLoc = GetShaderLocation(sh, "fogDensity");
+    SetShaderValue(sh, fogDensityLoc, &fogDensity, SHADER_UNIFORM_FLOAT);
 }
 
 #endif

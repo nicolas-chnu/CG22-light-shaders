@@ -24,6 +24,8 @@ out vec4 finalColor;
 uniform vec3 viewPos;
 uniform Material material;
 uniform Light light;
+uniform float fogDensity;
+uniform vec4 fogColor;
 
 void main()
 {
@@ -50,4 +52,13 @@ void main()
         
     vec3 result = ambient + diffuse + specular;
     finalColor = vec4(result, 1.0);
+
+    // Fog calculation
+    float dist = length(viewPos - fragPosition);
+
+    // Exponential fog
+    float fogFactor = 1.0/exp((dist*fogDensity)*(dist*fogDensity));
+    fogFactor = clamp(fogFactor, 0.0, 1.0);
+
+    finalColor = mix(fogColor, finalColor, fogFactor);
 } 
