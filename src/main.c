@@ -23,8 +23,8 @@ Vector3 cameraPosition;
 
 int main(void)
 {
-    const int screenWidth = 900;
-    const int screenHeight = 600;
+    const int screenWidth = 1400;
+    const int screenHeight = 900;
 
     InitWindow(screenWidth, screenHeight, "Shaders");
 
