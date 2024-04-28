@@ -1,3 +1,4 @@
-# Computer Graphics Labs. Raylib 
+# Computer Graphics Labs in Raylib 
 
-Each release tag refers to a specific lab.
+### Lab 6. Fog and Blending
+![Lab 6. Fog](img/demo.png)
