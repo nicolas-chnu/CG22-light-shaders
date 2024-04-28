@@ -36,7 +36,6 @@ int main(void)
     Shader cube1Shader = LoadShader("shaders/mat.vs", "shaders/mat.fs");
     Shader cube2Shader = LoadShader("shaders/mat.vs", "shaders/mat.fs");
     Shader planeShader = LoadShader("shaders/mat.vs", "shaders/mat.fs");
-    Shader lightSourceShader = LoadShader("shaders/light.vs", "shaders/light.fs");
 
     // models
     Model cube1 = LoadModelFromMesh(GenMeshCube(TILE_LENGTH, TILE_LENGTH, TILE_LENGTH));
@@ -49,7 +48,6 @@ int main(void)
     plane.materials[0].shader = planeShader;
 
     Model sphere = LoadModelFromMesh(GenMeshSphere(TILE_LENGTH / 4, 32, 32));
-    // sphere.materials[0].shader = lightSourceShader;
 
     // materials
     MyMaterial bronze = CreateBronze();
@@ -74,13 +72,18 @@ int main(void)
 
         BeginDrawing();
             ClearBackground(RAYWHITE);
+        
             BeginMode3D(camera);
-                
                 DrawModel(plane, PosFromTiles(0, 0, 0), 1, WHITE);
-                DrawModel(cube1, PosFromTiles(0, 0.5, 0), 1, WHITE);
-                DrawModel(cube2, PosFromTiles(2, 0.5, 2), 1, WHITE);
 
-                DrawModel(sphere, light.position, 1, light.enabled == 1 ? WHITE : BLACK);
+                BeginBlendMode(BLEND_ADDITIVE);    
+                    DrawModel(sphere, light.position, 1, light.enabled == 1 ? WHITE : BLACK);
+                    
+                    DrawModel(cube1, PosFromTiles(0, 0.5, 0), 1, WHITE);
+                    DrawModel(cube2, PosFromTiles(2, 0.5, 2), 1, WHITE);
+
+                    
+                EndBlendMode();
             EndMode3D();
         EndDrawing();
     }
@@ -93,7 +96,6 @@ int main(void)
     UnloadShader(planeShader);
     UnloadShader(cube1Shader);
     UnloadShader(cube2Shader);
-    UnloadShader(lightSourceShader);
 
     CloseWindow();
     return 0;
