@@ -91,22 +91,42 @@ int main(void)
         qsort(models, sizeof(models) / sizeof(models[0]), sizeof(ModelDistance), CompareModels);
 
         BeginDrawing();
-        ClearBackground(RAYWHITE);
+            ClearBackground(RAYWHITE);
 
-        BeginMode3D(camera);
-        DrawModel(plane, PosFromTiles(0, 0, 0), 1, WHITE);
+            BeginStencil();
+                BeginMode3D(camera);
+                    DrawModel(plane, PosFromTiles(0, 0, 0), 1, WHITE);
+                EndMode3D();
+            EndStencil();
 
-        BeginBlendMode(blendMode);
-        // first draw plain objects
-        DrawModel(sphere, light.position, 1, light.enabled == 1 ? WHITE : BLACK);
+            BeginStencilMask();
+                BeginMode3D(camera);
+                    DrawModel(plane, PosFromTiles(0, 0, 0), 1, WHITE);
+                    rlPushMatrix();
+                    rlScalef(1.0f, -1.0f, 1.0f);
 
-        // then transparent ones starting from most distant
-        for (int i = 0; i < sizeof(models) / sizeof(models[0]); i++)
-        {
-            DrawModel(models[i].model, models[i].position, 1.0f, WHITE);
-        }
-        EndBlendMode();
-        EndMode3D();
+                    DrawModel(sphere, light.position, 1.0f, WHITE);
+
+                    for (int i = 0; i < sizeof(models) / sizeof(models[0]); i++)
+                    {
+                        DrawModel(models[i].model, models[i].position, 1.0f, WHITE);
+                    }
+                    rlPopMatrix();
+                EndMode3D();
+            EndStencilMask();
+
+            BeginMode3D(camera);
+                BeginBlendMode(blendMode);
+                    // first draw plain objects
+                    DrawModel(sphere, light.position, 1, light.enabled == 1 ? WHITE : BLACK);
+
+                    // then transparent ones starting from most distant
+                    for (int i = 0; i < sizeof(models) / sizeof(models[0]); i++)
+                    {
+                        DrawModel(models[i].model, models[i].position, 1.0f, WHITE);
+                    }
+                EndBlendMode();
+            EndMode3D();
         EndDrawing();
     }
 
