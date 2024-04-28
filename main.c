@@ -33,9 +33,9 @@ int main(void)
     MyLight light = {0};
 
     // shaders
-    Shader cube1Shader = LoadShader("shaders/mat.vs", "shaders/mat.fs");
-    Shader cube2Shader = LoadShader("shaders/mat.vs", "shaders/mat.fs");
-    Shader planeShader = LoadShader("shaders/mat.vs", "shaders/mat.fs");
+    Shader cube1Shader = LoadShader("shaders/shared.vs", "shaders/transparent.fs");
+    Shader cube2Shader = LoadShader("shaders/shared.vs", "shaders/transparent.fs");
+    Shader planeShader = LoadShader("shaders/shared.vs", "shaders/plain.fs");
 
     // models
     Model cube1 = LoadModelFromMesh(GenMeshCube(TILE_LENGTH, TILE_LENGTH, TILE_LENGTH));
