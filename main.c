@@ -1,7 +1,7 @@
 #include "raylib.h"
 #include "rlgl.h"
 
-// #define SWITCH_LIGHTS       // uncomment to enable light switching 
+// #define SWITCH_LIGHTS       // uncomment to enable light switching
 #include "shader.h"
 
 #define TILE_LENGTH 4.0f
@@ -10,6 +10,7 @@ Vector3 PosFromTiles(float x, float y, float z);
 void UpdateLightEnabled(int *enabled);
 void UpdateLightPos(Vector3 *pos);
 void UpdateFogDensity(float *density);
+void UpdateBlendMode(int *blendMode);
 
 int main(void)
 {
@@ -18,16 +19,16 @@ int main(void)
 
     InitWindow(screenWidth, screenHeight, "Shaders");
 
-    Camera camera = { 
-        .position = (Vector3){ 16.0f, 16.0f, 16.0f },
-        .target = (Vector3){ 0.0f, 0.0f, 0.0f },
-        .up = (Vector3){ 0.0f, 1.0f, 0.0f },
+    Camera camera = {
+        .position = (Vector3){16.0f, 16.0f, 16.0f},
+        .target = (Vector3){0.0f, 0.0f, 0.0f},
+        .up = (Vector3){0.0f, 1.0f, 0.0f},
         .fovy = 45.0f,
-        .projection = CAMERA_PERSPECTIVE
-    };
+        .projection = CAMERA_PERSPECTIVE};
 
     // fog
     float fogDensity = 0.04f;
+    int blendMode = BLEND_ADDITIVE;
 
     // light
     MyLight light = {0};
@@ -54,13 +55,14 @@ int main(void)
     MyMaterial blueCristal = CreateBlueCristal();
     MyMaterial pearl = CreatePearl();
 
-    SetTargetFPS(60); 
+    SetTargetFPS(60);
 
-    while (!WindowShouldClose())   
+    while (!WindowShouldClose())
     {
         UpdateCamera(&camera, CAMERA_ORBITAL);
 
         UpdateFogDensity(&fogDensity);
+        UpdateBlendMode(&blendMode);
 
         UpdateLightPos(&light.position);
         UpdateLightEnabled(&light.enabled);
@@ -72,13 +74,12 @@ int main(void)
 
         BeginDrawing();
             ClearBackground(RAYWHITE);
-        
+
             BeginMode3D(camera);
                 DrawModel(plane, PosFromTiles(0, 0, 0), 1, WHITE);
 
-                BeginBlendMode(BLEND_ADDITIVE);    
+                BeginBlendMode(blendMode);
                     DrawModel(sphere, light.position, 1, light.enabled == 1 ? WHITE : BLACK);
-                    
                     DrawModel(cube1, PosFromTiles(0, 0.5, 0), 1, WHITE);
                     DrawModel(cube2, PosFromTiles(1.3, 0.6, 1.3), 1.2, WHITE);
                 EndBlendMode();
@@ -99,50 +100,75 @@ int main(void)
     return 0;
 }
 
-Vector3 PosFromTiles(float x, float y, float z) {
+Vector3 PosFromTiles(float x, float y, float z)
+{
     return (Vector3){x * TILE_LENGTH, y * TILE_LENGTH, z * TILE_LENGTH};
 }
 
-void UpdateLightEnabled(int* enabled) {
-    if (IsKeyPressed(KEY_SPACE)) {
+void UpdateLightEnabled(int *enabled)
+{
+    if (IsKeyPressed(KEY_SPACE))
+    {
         (*enabled) = ((*enabled) == 0) ? 1 : 0;
     }
 }
 
-void UpdateLightPos(Vector3 *pos) {
+void UpdateLightPos(Vector3 *pos)
+{
     float step = 0.1;
 
-    if (IsKeyDown(KEY_W)) {
+    if (IsKeyDown(KEY_W))
+    {
         (*pos).x += step;
-    } else if (IsKeyDown(KEY_A)) {
+    }
+    else if (IsKeyDown(KEY_A))
+    {
         (*pos).z -= step;
-    } else if (IsKeyDown(KEY_S)) {
+    }
+    else if (IsKeyDown(KEY_S))
+    {
         (*pos).x -= step;
-    } else if (IsKeyDown(KEY_D)) {
+    }
+    else if (IsKeyDown(KEY_D))
+    {
         (*pos).z += step;
-    } else if (IsKeyDown(KEY_E)) {
+    }
+    else if (IsKeyDown(KEY_E))
+    {
         (*pos).y += step;
-    } else if (IsKeyDown(KEY_Q)) {
+    }
+    else if (IsKeyDown(KEY_Q))
+    {
         (*pos).y -= step;
     }
 }
 
-void UpdateFogDensity(float* density) {
+void UpdateFogDensity(float *density)
+{
     if (IsKeyDown(KEY_UP))
-        {
-            *density += 0.001f;
-            
-            if (*density > 1.0f) {
-                *density = 1.0f;
-            }
-        }
+    {
+        *density += 0.001f;
 
-        if (IsKeyDown(KEY_DOWN))
+        if (*density > 1.0f)
         {
-            *density -= 0.001f;
-
-            if (*density < 0.0f) {
-                *density = 0.0f;
-            }
+            *density = 1.0f;
         }
+    }
+
+    if (IsKeyDown(KEY_DOWN))
+    {
+        *density -= 0.001f;
+
+        if (*density < 0.0f)
+        {
+            *density = 0.0f;
+        }
+    }
+}
+
+void UpdateBlendMode(int *blendMode)
+{
+    if (IsKeyPressed(KEY_B)) {
+        *blendMode = *blendMode == BLEND_ALPHA ? BLEND_ADDITIVE : BLEND_ALPHA;
+    }
 }
