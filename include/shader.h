@@ -53,9 +53,9 @@ MyMaterial CreateBlueCristal() {
 }
 
 void UpdateLightColor(MyLight* li) {
-    float tk = sinf((float)GetTime());
 
     #ifdef SWITCH_LIGHTS
+    float tk = sinf((float)GetTime()) * 0.2 + 0.8;
     Vector3 lightColor = {tk * 2.0, tk * 0.7, tk * 1.3};
     #else
     Vector3 lightColor = {2.0, 0.7, 1.3};
@@ -104,7 +104,7 @@ void UpdateMaterialShader(Shader sh, MyMaterial mat, MyLight li, Vector3 viewPos
 
     // fog props
     #ifdef SWITCH_LIGHTS
-    float tk = sinf((float)GetTime());
+    float tk = sinf((float)GetTime()) * 0.2 + 0.8;
     Vector4 fogColor = {tk * 2.0, tk * 0.7, tk * 1.3, 1};
     #else
     Vector4 fogColor = {0.5, 0.5, 0.5, 1};
@@ -115,6 +115,16 @@ void UpdateMaterialShader(Shader sh, MyMaterial mat, MyLight li, Vector3 viewPos
 
     int fogDensityLoc = GetShaderLocation(sh, "fogDensity");
     SetShaderValue(sh, fogDensityLoc, &fogDensity, SHADER_UNIFORM_FLOAT);
+}
+
+float clamp(float value, float min, float max) {
+    if (value < min) {
+        return min;
+    } else if (value > max) {
+        return max;
+    } else {
+        return value;
+    }
 }
 
 #endif
