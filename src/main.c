@@ -43,9 +43,9 @@ int main(void)
     MyLight light = {0};
 
     // shaders
-    Shader cube1Shader = LoadShader("shaders/shared.vs", "shaders/transparent.fs");
-    Shader cube2Shader = LoadShader("shaders/shared.vs", "shaders/transparent.fs");
-    Shader planeShader = LoadShader("shaders/shared.vs", "shaders/plain.fs");
+    Shader cube1Shader = LoadShader("src/shaders/shared.vs", "src/shaders/transparent.fs");
+    Shader cube2Shader = LoadShader("src/shaders/shared.vs", "src/shaders/transparent.fs");
+    Shader planeShader = LoadShader("src/shaders/shared.vs", "src/shaders/plain.fs");
 
     // models
     Model cube1 = LoadModelFromMesh(GenMeshCube(TILE_LENGTH, TILE_LENGTH, TILE_LENGTH));
@@ -84,28 +84,28 @@ int main(void)
 
         ModelDistance models[] = {
             {cube1, PosFromTiles(0, 0.5, 0)},
-            {cube2, PosFromTiles(1.3, 0.6, 1.3)}
-        };
+            {cube2, PosFromTiles(1.3, 0.6, 1.3)}};
 
         // sorting the models by distance from the camera
         qsort(models, sizeof(models) / sizeof(models[0]), sizeof(ModelDistance), CompareModels);
 
         BeginDrawing();
-            ClearBackground(RAYWHITE);
+        ClearBackground(RAYWHITE);
 
-            BeginMode3D(camera);
-                DrawModel(plane, PosFromTiles(0, 0, 0), 1, WHITE);
+        BeginMode3D(camera);
+        DrawModel(plane, PosFromTiles(0, 0, 0), 1, WHITE);
 
-                BeginBlendMode(blendMode);
-                    // first draw plain objects
-                    DrawModel(sphere, light.position, 1, light.enabled == 1 ? WHITE : BLACK);
+        BeginBlendMode(blendMode);
+        // first draw plain objects
+        DrawModel(sphere, light.position, 1, light.enabled == 1 ? WHITE : BLACK);
 
-                    // then transparent ones starting from most distant
-                    for (int i = 0; i < sizeof(models) / sizeof(models[0]); i++) {
-                        DrawModel(models[i].model, models[i].position, 1.0f, WHITE);
-                    }
-                EndBlendMode();
-            EndMode3D();
+        // then transparent ones starting from most distant
+        for (int i = 0; i < sizeof(models) / sizeof(models[0]); i++)
+        {
+            DrawModel(models[i].model, models[i].position, 1.0f, WHITE);
+        }
+        EndBlendMode();
+        EndMode3D();
         EndDrawing();
     }
 
@@ -196,9 +196,10 @@ void UpdateBlendMode(int *blendMode)
     }
 }
 
-int CompareModels(const void *a, const void *b) {
-    ModelDistance *modelA = (ModelDistance*)a;
-    ModelDistance *modelB = (ModelDistance*)b;
+int CompareModels(const void *a, const void *b)
+{
+    ModelDistance *modelA = (ModelDistance *)a;
+    ModelDistance *modelB = (ModelDistance *)b;
 
     float distanceA = Vector3Distance(modelA->position, cameraPosition);
     float distanceB = Vector3Distance(modelB->position, cameraPosition);
