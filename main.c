@@ -51,7 +51,7 @@ int main(void)
 
     // materials
     MyMaterial bronze = CreateBronze();
-    MyMaterial greenRubber = CreateGreenRubber();
+    MyMaterial blueCristal = CreateBlueCristal();
     MyMaterial pearl = CreatePearl();
 
     SetTargetFPS(60); 
@@ -66,7 +66,7 @@ int main(void)
         UpdateLightEnabled(&light.enabled);
         UpdateLightColor(&light);
 
-        UpdateMaterialShader(planeShader, greenRubber, light, camera.position, fogDensity);
+        UpdateMaterialShader(planeShader, blueCristal, light, camera.position, fogDensity);
         UpdateMaterialShader(cube1Shader, bronze, light, camera.position, fogDensity);
         UpdateMaterialShader(cube2Shader, pearl, light, camera.position, fogDensity);
 
@@ -80,9 +80,7 @@ int main(void)
                     DrawModel(sphere, light.position, 1, light.enabled == 1 ? WHITE : BLACK);
                     
                     DrawModel(cube1, PosFromTiles(0, 0.5, 0), 1, WHITE);
-                    DrawModel(cube2, PosFromTiles(2, 0.5, 2), 1, WHITE);
-
-                    
+                    DrawModel(cube2, PosFromTiles(1.3, 0.6, 1.3), 1.2, WHITE);
                 EndBlendMode();
             EndMode3D();
         EndDrawing();
