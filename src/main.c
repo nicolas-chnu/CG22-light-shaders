@@ -65,10 +65,11 @@ int main(void)
     MyMaterial pearl = CreatePearl();
 
     SetTargetFPS(60);
+    DisableCursor();
 
     while (!WindowShouldClose())
     {
-        UpdateCamera(&camera, CAMERA_ORBITAL);
+        UpdateCamera(&camera, CAMERA_FREE);
         cameraPosition = camera.position;
 
         UpdateFogDensity(&fogDensity);
