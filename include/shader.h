@@ -43,11 +43,11 @@ MyMaterial CreatePearl() {
     };
 }
 
-MyMaterial CreateGreenRubber() {
+MyMaterial CreateBlueCristal() {
     return (MyMaterial) {
         .ambient = (Vector3){0.0, 0.05, 0.0},
-        .diffuse = (Vector3){0.4, 0.5, 0.4},
-        .specular = (Vector3){0.04,	0.7, 0.04},
+        .diffuse = (Vector3){0.1, 0.1, 0.9},
+        .specular = (Vector3){0.05,	0.05, 0.05},
         .shininess = 0.5
     };
 }
