@@ -1,0 +1,6 @@
+* text=auto
+
+*.sh eol=lf
+*.md eol=crlf
+
+*.png -text
