@@ -129,7 +129,7 @@ Vector3 PosFromTiles(float x, float y, float z)
 
 void UpdateLightEnabled(int *enabled)
 {
-    if (IsKeyPressed(KEY_SPACE))
+    if (IsKeyPressed(KEY_F11))
     {
         (*enabled) = ((*enabled) == 0) ? 1 : 0;
     }
@@ -139,27 +139,27 @@ void UpdateLightPos(Vector3 *pos)
 {
     float step = 0.1;
 
-    if (IsKeyDown(KEY_W))
+    if (IsKeyDown(KEY_I))
     {
         (*pos).x += step;
     }
-    else if (IsKeyDown(KEY_A))
+    else if (IsKeyDown(KEY_J))
     {
         (*pos).z -= step;
     }
-    else if (IsKeyDown(KEY_S))
+    else if (IsKeyDown(KEY_K))
     {
         (*pos).x -= step;
     }
-    else if (IsKeyDown(KEY_D))
+    else if (IsKeyDown(KEY_L))
     {
         (*pos).z += step;
     }
-    else if (IsKeyDown(KEY_E))
+    else if (IsKeyDown(KEY_O))
     {
         (*pos).y += step;
     }
-    else if (IsKeyDown(KEY_Q))
+    else if (IsKeyDown(KEY_U))
     {
         (*pos).y -= step;
     }
@@ -167,7 +167,7 @@ void UpdateLightPos(Vector3 *pos)
 
 void UpdateFogDensity(float *density)
 {
-    if (IsKeyDown(KEY_UP))
+    if (IsKeyDown(KEY_PAGE_UP))
     {
         *density += 0.001f;
 
@@ -177,7 +177,7 @@ void UpdateFogDensity(float *density)
         }
     }
 
-    if (IsKeyDown(KEY_DOWN))
+    if (IsKeyDown(KEY_PAGE_DOWN))
     {
         *density -= 0.001f;
 
@@ -190,7 +190,7 @@ void UpdateFogDensity(float *density)
 
 void UpdateBlendMode(int *blendMode)
 {
-    if (IsKeyPressed(KEY_B))
+    if (IsKeyPressed(KEY_F5))
     {
         *blendMode = *blendMode == BLEND_ALPHA ? BLEND_ADDITIVE : BLEND_ALPHA;
     }
