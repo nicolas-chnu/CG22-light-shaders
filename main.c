@@ -6,11 +6,20 @@
 
 #define TILE_LENGTH 4.0f
 
+typedef struct ModelDistance
+{
+    Model model;
+    Vector3 position;
+} ModelDistance;
+
 Vector3 PosFromTiles(float x, float y, float z);
 void UpdateLightEnabled(int *enabled);
 void UpdateLightPos(Vector3 *pos);
 void UpdateFogDensity(float *density);
 void UpdateBlendMode(int *blendMode);
+int CompareModels(const void *a, const void *b);
+
+Vector3 cameraPosition;
 
 int main(void)
 {
@@ -60,6 +69,7 @@ int main(void)
     while (!WindowShouldClose())
     {
         UpdateCamera(&camera, CAMERA_ORBITAL);
+        cameraPosition = camera.position;
 
         UpdateFogDensity(&fogDensity);
         UpdateBlendMode(&blendMode);
@@ -72,6 +82,14 @@ int main(void)
         UpdateMaterialShader(cube1Shader, bronze, light, camera.position, fogDensity);
         UpdateMaterialShader(cube2Shader, pearl, light, camera.position, fogDensity);
 
+        ModelDistance models[] = {
+            {cube1, PosFromTiles(0, 0.5, 0)},
+            {cube2, PosFromTiles(1.3, 0.6, 1.3)}
+        };
+
+        // sorting the models by distance from the camera
+        qsort(models, sizeof(models) / sizeof(models[0]), sizeof(ModelDistance), CompareModels);
+
         BeginDrawing();
             ClearBackground(RAYWHITE);
 
@@ -79,9 +97,13 @@ int main(void)
                 DrawModel(plane, PosFromTiles(0, 0, 0), 1, WHITE);
 
                 BeginBlendMode(blendMode);
+                    // first draw plain objects
                     DrawModel(sphere, light.position, 1, light.enabled == 1 ? WHITE : BLACK);
-                    DrawModel(cube1, PosFromTiles(0, 0.5, 0), 1, WHITE);
-                    DrawModel(cube2, PosFromTiles(1.3, 0.6, 1.3), 1.2, WHITE);
+
+                    // then transparent ones starting from most distant
+                    for (int i = 0; i < sizeof(models) / sizeof(models[0]); i++) {
+                        DrawModel(models[i].model, models[i].position, 1.0f, WHITE);
+                    }
                 EndBlendMode();
             EndMode3D();
         EndDrawing();
@@ -168,7 +190,18 @@ void UpdateFogDensity(float *density)
 
 void UpdateBlendMode(int *blendMode)
 {
-    if (IsKeyPressed(KEY_B)) {
+    if (IsKeyPressed(KEY_B))
+    {
         *blendMode = *blendMode == BLEND_ALPHA ? BLEND_ADDITIVE : BLEND_ALPHA;
     }
+}
+
+int CompareModels(const void *a, const void *b) {
+    ModelDistance *modelA = (ModelDistance*)a;
+    ModelDistance *modelB = (ModelDistance*)b;
+
+    float distanceA = Vector3Distance(modelA->position, cameraPosition);
+    float distanceB = Vector3Distance(modelB->position, cameraPosition);
+
+    return distanceB - distanceA;
 }
