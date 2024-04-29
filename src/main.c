@@ -1,5 +1,7 @@
 #include "raylib.h"
 #include "rlgl.h"
+#include "glfw3.h"
+#include "stencil.h"
 
 // #define SWITCH_LIGHTS       // uncomment to enable light switching
 #include "shader.h"
@@ -29,7 +31,7 @@ int main(void)
     InitWindow(screenWidth, screenHeight, "Shaders");
 
     Camera camera = {
-        .position = (Vector3){16.0f, 16.0f, 16.0f},
+        .position = (Vector3){16.0f, 5.0f, 16.0f},
         .target = (Vector3){0.0f, 0.0f, 0.0f},
         .up = (Vector3){0.0f, 1.0f, 0.0f},
         .fovy = 45.0f,
@@ -94,17 +96,24 @@ int main(void)
             ClearBackground(RAYWHITE);
 
             BeginMode3D(camera);
+                BeginStencil();
+
+                BeginStencilMask();
+                    DrawPlane(PosFromTiles(0, 0, 0), (Vector2){TILE_LENGTH * 4, TILE_LENGTH * 4}, (Color) {255, 0, 0, 100});
+                EndStencilMask();
+
                 rlPushMatrix();
                     rlScalef(1, -1, 1);
                     DrawCube(PosFromTiles(0, 0.6, 0), TILE_LENGTH, TILE_LENGTH, TILE_LENGTH, BLUE);
                 rlPopMatrix();
+
+                EndStencil();
 
                 BeginBlendMode(BLEND_ALPHA);
                     DrawPlane(PosFromTiles(0, 0, 0), (Vector2){TILE_LENGTH * 4, TILE_LENGTH * 4}, (Color) {255, 0, 0, 100});
                 EndBlendMode();
 
                 DrawCube(PosFromTiles(0, 0.6, 0), TILE_LENGTH, TILE_LENGTH, TILE_LENGTH, BLUE);
-
             EndMode3D();
         EndDrawing();
     }
