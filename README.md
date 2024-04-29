@@ -5,3 +5,6 @@
 
 ### Lab 6. Fog and Blending
 ![Lab 6. Fog](img/demo-6.png)
+
+### Lab 7. Reflection
+![Lab 7. Reflection](img/demo-7.png)
