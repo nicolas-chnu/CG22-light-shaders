@@ -26,6 +26,7 @@ uniform Material material;
 uniform Light light;
 uniform float fogDensity;
 uniform vec4 fogColor;
+uniform float opacity;
 
 void main()
 {
@@ -51,7 +52,7 @@ void main()
     vec3 specular = light.specular * (spec * material.specular);  
         
     vec3 result = ambient + diffuse + specular;
-    finalColor = vec4(result, 0.5);
+    finalColor = vec4(result, opacity);
 
     // Fog calculation
     float dist = length(viewPos - fragPosition);
