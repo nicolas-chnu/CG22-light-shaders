@@ -45,9 +45,9 @@ int main(void)
     MyLight light = {0};
 
     // shaders
-    Shader cube1Shader = LoadShader("src/shaders/shared.vs", "src/shaders/transparent.fs");
-    Shader cube2Shader = LoadShader("src/shaders/shared.vs", "src/shaders/transparent.fs");
-    Shader planeShader = LoadShader("src/shaders/shared.vs", "src/shaders/plain.fs");
+    Shader cube1Shader = LoadShader("src/shaders/shared.vs", "src/shaders/fog.fs");
+    Shader cube2Shader = LoadShader("src/shaders/shared.vs", "src/shaders/fog.fs");
+    Shader planeShader = LoadShader("src/shaders/shared.vs", "src/shaders/fog.fs");
 
     // models
     Model cube1 = LoadModelFromMesh(GenMeshCube(TILE_LENGTH, TILE_LENGTH, TILE_LENGTH));
@@ -67,7 +67,7 @@ int main(void)
     MyMaterial pearl = CreatePearl();
 
     SetTargetFPS(60);
-    DisableCursor();
+    // DisableCursor();
 
     while (!WindowShouldClose())
     {
@@ -81,39 +81,48 @@ int main(void)
         UpdateLightEnabled(&light.enabled);
         UpdateLightColor(&light);
 
-        UpdateMaterialShader(planeShader, blueCristal, light, camera.position, fogDensity);
-        UpdateMaterialShader(cube1Shader, bronze, light, camera.position, fogDensity);
-        UpdateMaterialShader(cube2Shader, pearl, light, camera.position, fogDensity);
+        UpdateMaterialShader(planeShader, blueCristal, light, camera.position, fogDensity, 1);
+        UpdateMaterialShader(cube1Shader, bronze, light, camera.position, fogDensity, 0.5);
+        UpdateMaterialShader(cube2Shader, pearl, light, camera.position, fogDensity,  0.5);
 
         ModelDistance models[] = {
-            {cube1, PosFromTiles(0, 0.5, 0)},
+            {cube1, PosFromTiles(0, 0.6, 0)},
             {cube2, PosFromTiles(1.3, 0.6, 1.3)}};
 
         // sorting the models by distance from the camera
         qsort(models, sizeof(models) / sizeof(models[0]), sizeof(ModelDistance), CompareModels);
 
         BeginDrawing();
-            ClearBackground(RAYWHITE);
+            ClearBackground(BLACK);
 
             BeginMode3D(camera);
                 BeginStencil();
+                    BeginStencilMask();
+                        DrawModel(plane, PosFromTiles(0, 0, 0), 1, WHITE);
+                    EndStencilMask();
 
-                BeginStencilMask();
-                    DrawPlane(PosFromTiles(0, 0, 0), (Vector2){TILE_LENGTH * 4, TILE_LENGTH * 4}, (Color) {255, 0, 0, 100});
-                EndStencilMask();
+                    rlPushMatrix();
+                        rlScalef(1, -1, 1);
+                        BeginBlendMode(blendMode);
+                            // first draw plain objects
+                            DrawModel(sphere, light.position, 1, light.enabled == 1 ? WHITE : BLACK);
 
-                rlPushMatrix();
-                    rlScalef(1, -1, 1);
-                    DrawCube(PosFromTiles(0, 0.6, 0), TILE_LENGTH, TILE_LENGTH, TILE_LENGTH, BLUE);
-                rlPopMatrix();
-
+                            // then transparent ones starting from most distant
+                            for (int i = 0; i < sizeof(models) / sizeof(models[0]); i++) {
+                                DrawModel(models[i].model, models[i].position, 1.0f, WHITE);
+                            }
+                        EndBlendMode();
+                    rlPopMatrix();
                 EndStencil();
 
-                BeginBlendMode(BLEND_ALPHA);
-                    DrawPlane(PosFromTiles(0, 0, 0), (Vector2){TILE_LENGTH * 4, TILE_LENGTH * 4}, (Color) {255, 0, 0, 100});
-                EndBlendMode();
+                BeginBlendMode(blendMode);
+                    DrawModel(plane, PosFromTiles(0, 0, 0), 1, WHITE);
+                    DrawModel(sphere, light.position, 1, light.enabled == 1 ? WHITE : BLACK);
 
-                DrawCube(PosFromTiles(0, 0.6, 0), TILE_LENGTH, TILE_LENGTH, TILE_LENGTH, BLUE);
+                    for (int i = 0; i < sizeof(models) / sizeof(models[0]); i++) {
+                        DrawModel(models[i].model, models[i].position, 1.0f, WHITE);
+                    }
+                EndBlendMode();
             EndMode3D();
         EndDrawing();
     }

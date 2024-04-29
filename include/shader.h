@@ -69,7 +69,7 @@ void UpdateLightColor(MyLight* li) {
     (*li).specular = (Vector3){1, 1, 1};
 }
 
-void UpdateMaterialShader(Shader sh, MyMaterial mat, MyLight li, Vector3 viewPos, float fogDensity) {
+void UpdateMaterialShader(Shader sh, MyMaterial mat, MyLight li, Vector3 viewPos, float fogDensity, float opacity) {
     int viewPosLoc = GetShaderLocation(sh, "viewPos");
     SetShaderValue(sh, viewPosLoc, (float[3]){viewPos.x, viewPos.y, viewPos.z}, SHADER_UNIFORM_VEC3);
 
@@ -115,6 +115,10 @@ void UpdateMaterialShader(Shader sh, MyMaterial mat, MyLight li, Vector3 viewPos
 
     int fogDensityLoc = GetShaderLocation(sh, "fogDensity");
     SetShaderValue(sh, fogDensityLoc, &fogDensity, SHADER_UNIFORM_FLOAT);
+
+    // opacity
+    int opacityLoc = GetShaderLocation(sh, "opacity");
+    SetShaderValue(sh, opacityLoc, &opacity, SHADER_UNIFORM_FLOAT);
 }
 
 float clamp(float value, float min, float max) {
