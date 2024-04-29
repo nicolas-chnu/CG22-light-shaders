@@ -54,7 +54,7 @@ int main(void)
     Model cube2 = LoadModelFromMesh(GenMeshCube(TILE_LENGTH, TILE_LENGTH, TILE_LENGTH));
     cube2.materials[0].shader = cube2Shader;
 
-    Model plane = LoadModelFromMesh(GenMeshPlane(TILE_LENGTH * 40, TILE_LENGTH * 40, 1, 1));
+    Model plane = LoadModelFromMesh(GenMeshPlane(TILE_LENGTH * 10, TILE_LENGTH * 10, 1, 1));
     plane.materials[0].shader = planeShader;
 
     Model sphere = LoadModelFromMesh(GenMeshSphere(TILE_LENGTH / 4, 32, 32));
@@ -93,39 +93,18 @@ int main(void)
         BeginDrawing();
             ClearBackground(RAYWHITE);
 
-            BeginStencil();
-                BeginMode3D(camera);
-                    DrawModel(plane, PosFromTiles(0, 0, 0), 1, WHITE);
-                EndMode3D();
-            EndStencil();
-
-            BeginStencilMask();
-                BeginMode3D(camera);
-                    DrawModel(plane, PosFromTiles(0, 0, 0), 1, WHITE);
-                    rlPushMatrix();
-                    rlScalef(1.0f, -1.0f, 1.0f);
-
-                    DrawModel(sphere, light.position, 1.0f, WHITE);
-
-                    for (int i = 0; i < sizeof(models) / sizeof(models[0]); i++)
-                    {
-                        DrawModel(models[i].model, models[i].position, 1.0f, WHITE);
-                    }
-                    rlPopMatrix();
-                EndMode3D();
-            EndStencilMask();
-
             BeginMode3D(camera);
-                BeginBlendMode(blendMode);
-                    // first draw plain objects
-                    DrawModel(sphere, light.position, 1, light.enabled == 1 ? WHITE : BLACK);
+                rlPushMatrix();
+                    rlScalef(1, -1, 1);
+                    DrawCube(PosFromTiles(0, 0.6, 0), TILE_LENGTH, TILE_LENGTH, TILE_LENGTH, BLUE);
+                rlPopMatrix();
 
-                    // then transparent ones starting from most distant
-                    for (int i = 0; i < sizeof(models) / sizeof(models[0]); i++)
-                    {
-                        DrawModel(models[i].model, models[i].position, 1.0f, WHITE);
-                    }
+                BeginBlendMode(BLEND_ALPHA);
+                    DrawPlane(PosFromTiles(0, 0, 0), (Vector2){TILE_LENGTH * 4, TILE_LENGTH * 4}, (Color) {255, 0, 0, 100});
                 EndBlendMode();
+
+                DrawCube(PosFromTiles(0, 0.6, 0), TILE_LENGTH, TILE_LENGTH, TILE_LENGTH, BLUE);
+
             EndMode3D();
         EndDrawing();
     }
